@@ -48,12 +48,12 @@ class Title:
     def _exceptions(self):
         # string length exceptions
         if len(self.text) == 0:
-            raise ValueError('text length must be grater than 1')
+            raise ValueError('text length must be grater than one')
         if len(self.border) < 1 or len(self.border) > 1:
-            raise ValueError('border length must be 1')
+            raise ValueError('border length must be one')
 
         if len(self.bg) < 1 or len(self.bg) > 1:
-            raise ValueError('background length must be 1')
+            raise ValueError('background length must be one')
 
         # frame and background negative sizes
         if self.width < 0 or self.height < 0:
