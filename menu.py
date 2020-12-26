@@ -115,7 +115,7 @@ class Menu:
         for i in range(len(self.menu_items)):
             items += '{0}{1}{2}{3}{4}'.format(
                 self.item_indentation,
-                bullet_list[i % len(self.menu_items)],
+                bullet_list[i % len(bullet_list)],
                 self.separator,
                 self.bullet_to_item_spaces,
                 self.menu_items[i])
