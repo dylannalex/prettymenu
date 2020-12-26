@@ -22,14 +22,14 @@ class Menu:
         '''
         ### Params ###
 
-        title:                      string
-        title_indentation:     integer (spaces from border to title)
-        capitalize_items:           bool
-        items_identation:      integer
-        bullets:                   'numbers', 'alphabet' or string
-        bullet_to_item_spaces:      integer (spaces from bullet [counting separator] to item)
-        bullet_to_item_spaces:      integer (spaces from bullet to item)
-        separator:                  char between bullet and item
+        title:                      [list / tuple]
+        title_indentation:          spaces from border to title [integer]
+        capitalize_items:           [bool]
+        items_identation:           [int]
+        bullets:                   'numbers', 'alphabet' or [string]
+        bullet_to_item_spaces:      spaces from bullet (counting separator) to item [int] 
+        bullet_to_item_spaces:      spaces from bullet to item [int]
+        separator:                  between bullet and item [char]
 
         ### Exceptions ###
 
@@ -62,17 +62,19 @@ class Menu:
         self.item_to_item_lines = self._line_jump(
             options['item_to_item_lines'])
         # spaces variables
-        self.title_indentation = options['title_indentation']
+        self.title_indentation = self._indentation(
+            options['title_indentation'])
         self.item_indentation = self._indentation(
             options['items_identation'])
         self.bullet_to_item_spaces = self._indentation(
             options['bullet_to_item_spaces'])
 
+        # check for empty bullets & separator
         if options['bullets'] == None:
             self.bullets = ''
         else:
             self.bullets = options['bullets']
-        # separator
+
         if options['separator'] == None:
             self.separator = ''
         else:
@@ -81,14 +83,29 @@ class Menu:
         self.menu_items = []
         self._exceptions()
 
-    @property
+    @ property
     def title(self):
-        return self.title_text.center(self.title_indentation)
+        '''
+        ### Indents each line of title ###
 
-    @property
+        retruns indented title [string]
+        '''
+        title = ''
+        for line in range(len(self.title_text)):
+            title += self.title_indentation + self.title_text[line]
+            if line < len(self.title_text) - 1:
+                title += '\n'
+        return title
+
+    @ property
     def items(self):
-        '''returns each item which its bullet and separator'''
+        '''
+        Indents and add bullets & separators to each item in menu_items
 
+        returns decorated items [string]
+        '''
+
+        # defines bullet list (if bullets in default, calls _default_bullet_list method)
         if self.bullets in self.bullets_defaults:
             bullet_list = self._default_bullet_list(self.bullets)
         else:
@@ -108,20 +125,26 @@ class Menu:
                 items += self.item_to_item_lines
         return items
 
-    def __str__(self):
-        menu = ''
-        if self.title != None:
-            menu += '{}{}'.format(self.title, self.title_to_items_lines)
-        menu += self.items
-        return menu
-
     def add_item(self, item):
+        '''
+        adds item to menu_items
+
+        ### Params ###
+
+        item:   [string]
+        '''
         if self.capitalize_items:
             self.menu_items.append(item.capitalize())
         else:
             self.menu_items.append(item)
 
     def add_items(self, items):
+        '''
+        adds items to menu_items
+
+        ### Params ###
+        items:   [tuple/list]
+        '''
         for item in items:
             if self.capitalize_items:
                 self.menu_items.append(item.capitalize())
@@ -129,15 +152,31 @@ class Menu:
                 self.menu_items.append(item)
 
     def _indentation(self, spaces):
+        '''
+        converts number of spaces [int] to string
+
+        returns string with total spaces
+        '''
         if spaces > 0:
             return ' ' * spaces
         else:
             return ''
 
     def _line_jump(self, jumps):
+        '''
+        converts number of jumps [int] to string
+
+        returns string with total line jumps
+        '''
         return '\n' * jumps
 
     def _default_bullet_list(self, option):
+        '''
+        returns corresponding default list of bullet
+
+        ### Params ###
+        option:     bullet in defaults bullet [string]
+        '''
         if option == 'numbers':
             return [(i + 1) for i in range(len(self.menu_items))]
 
@@ -159,18 +198,9 @@ class Menu:
         if len(self.separator) > 1:
             raise ValueError('separator length cannot be grater than one')
 
-
-if __name__ == '__main__':
-    m = Menu(title='Title1',
-             title_indentation=100,
-             items_identation=1,
-             title_to_items_lines=2,
-             item_to_item_lines=2,
-             bullet_to_item_spaces=1,
-             separator=')',
-             bullets='alphabet')
-
-    m.add_items(['option 1', 'option 2', 'option 3', 'option 4', 'option 5'])
-    m.add_item('option 6')
-    print(m)
-    input('')
+    def __str__(self):
+        menu = ''
+        if self.title != None:
+            menu += '{}{}'.format(self.title, self.title_to_items_lines)
+        menu += self.items
+        return menu
