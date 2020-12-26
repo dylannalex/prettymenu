@@ -22,8 +22,8 @@ class Title:
         ### Exceptions ###
 
         must specify text
-        border & background length must be 1
-        width & height cannot be less than 1
+        border & background length must be one
+        width & height cannot be less than one
         bg_width cannot be larger than width
         bg_height cannot be larger than height
         '''
@@ -44,6 +44,56 @@ class Title:
         self.border_len = len(self.text) + \
             (self.width + self.bg_width) * 2
         self._exceptions()
+
+    @property
+    def border_top_and_bot(self):
+        '''
+        returns frame's top and bottom border [string]
+        '''
+        border = ''
+        for i in range(self.height - self.bg_height):
+            border += self.border * (self.border_len - (self.bg_width * 2))
+            if i < (self.height - self.bg_height - 1):
+                border += '\n'
+        return border
+
+    @ property
+    def border_sides(self):
+        '''
+        returns frame's sides border [string]
+        '''
+        return self.border * (self.width - self.bg_width)
+
+    @ property
+    def frame_center(self):
+        '''
+        Combines title, background and border
+
+        returns frame's center [string]
+        '''
+        # text
+        left = '{0}{1}'.format(
+            self.border_sides,
+            self.bg * (self.bg_width)
+        )
+        right = left[::-1]
+
+        # top and bottom of frame_center
+        top = ''
+        for i in range(self.bg_height):
+            top += '{0}{1}{0}\n'.format(
+                self.border_sides,
+                self.bg * (len(self.text) + (self.bg_width * 2)))
+        bot = top[::-1]
+
+        return '{0}{1}{2}{3}{4}'.format(top, left, self.text, right, bot)
+
+    @property
+    def title_lines(self):
+        '''
+        returns tuple with each line of the title
+        '''
+        return tuple(str(self).split('\n'))
 
     def _exceptions(self):
         # string length exceptions
@@ -74,39 +124,6 @@ class Title:
         # background size greater than 0 when frame size == 0
         if (self.width == 0 and self.bg_width > 0) or (self.height == 0 and self.bg_height):
             raise ValueError('cannot add background while frame size is zero')
-
-    @property
-    def border_top_and_bot(self):
-        result = ''
-        for i in range(self.height - self.bg_height):
-            result += self.border * (self.border_len - (self.bg_width * 2))
-            # if not in last execution, jump to new line
-            if i < (self.height - self.bg_height - 1):
-                result += '\n'
-        return result
-
-    @ property
-    def border_sides(self):
-        return self.border * (self.width - self.bg_width)
-
-    @ property
-    def frame_center(self):
-        # text
-        left = '{0}{1}'.format(
-            self.border_sides,
-            self.bg * (self.bg_width)
-        )
-        right = left[::-1]
-
-        # top and bottom of frame_center
-        top = ''
-        for i in range(self.bg_height):
-            top += '{0}{1}{0}\n'.format(
-                self.border_sides,
-                self.bg * (len(self.text) + (self.bg_width * 2)))
-        bot = top[::-1]
-
-        return '{0}{1}{2}{3}{4}'.format(top, left, self.text, right, bot)
 
     def __str__(self):
         return '{0}\n{1}\n{0}'.format(self.border_top_and_bot, self.frame_center)
